@@ -1,0 +1,48 @@
+Select all tickets costing between a range
+
+SELECT ticket_id
+FROM ticket
+WHERE price > r1 AND price < r2
+
+
+Get all the time blocks from a schedule.
+
+SELECT time_block_start, time_block_end
+FROM userschedule/hostschedule
+WHERE user_id/host_id = current user
+
+
+
+Join host and event to get the rating of the host hosting an event
+
+SELECT h.rating
+FROM host2 h, event e
+WHERE h.host_id = e.host_id & e.event_id = current event id
+
+
+
+Find the venue(s) with the min/max capacity (min/max)
+
+SELECT v2.venue_id
+FROM venue1 v1, venue2 v2
+WHERE v1.name = v2.name AND v1.address = v2.address AND v1.capacity = (SELECT MAX(v3capacity) FROM venue1 v3)
+
+
+
+Find the minimum ticket price for an event by each ticket vendor
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING
+
+
+
+Find all performers who perform at all events (or a combination of events)
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING

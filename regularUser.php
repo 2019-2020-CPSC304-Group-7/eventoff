@@ -106,7 +106,7 @@
                     $min = $_POST["minimum"];
                     $max = $_POST["maximum"];
                     $query = "select t.ticket_id as id, t.price as pr, e.name as nm
-                                from ticket t, isFor i, `event` e
+                                from ticket t, isfor i, `event` e
                                 where t.price >= $min AND t.price <= $max
                                 AND t.ticket_id = i.ticket_id AND i.event_id = e.event_id";
                     $result = $connection->query($query);
