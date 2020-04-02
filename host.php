@@ -1,5 +1,6 @@
 <?php
     include 'connect.php';
+    session_start();
     $connection = openConnection();
     $name = $_GET["user"];
     $userID = $_GET["userID"];
