@@ -1,158 +1,158 @@
-CREATE TABLE Host1 (
+CREATE TABLE host1 (
     email CHAR(80) PRIMARY KEY,
     organization CHAR(80)
 );
 
-CREATE TABLE Host2 (
+CREATE TABLE host2 (
     host_id INT PRIMARY KEY,
     name CHAR(80),
     email CHAR(80),
     rating FLOAT,
-    FOREIGN KEY (email) REFERENCES Host1 (email) ON DELETE SET NULL
+    FOREIGN KEY (email) REFERENCES host1 (email) ON DELETE SET NULL
 );
 
-CREATE TABLE `Event` (
+CREATE TABLE `event` (
     event_id INT PRIMARY KEY,
     name CHAR(80),
     start_date DATE,
     end_date DATE,
     ranking FLOAT,
     host_id INT NOT NULL,
-    FOREIGN KEY (host_id) REFERENCES Host2 (host_id) ON DELETE CASCADE
+    FOREIGN KEY (host_id) REFERENCES host2 (host_id) ON DELETE CASCADE
 );
 
-CREATE TABLE Performer (
+CREATE TABLE performer (
     performer_id INT PRIMARY KEY,
     name CHAR(80),
     contact CHAR(80),
     ranking FLOAT
 );
 
-CREATE TABLE Venue1 (
+CREATE TABLE venue1 (
     name CHAR(80),
     address CHAR(80),
     capacity INT,
     PRIMARY KEY (name, address)
 );
 
-CREATE TABLE Venue2 (
+CREATE TABLE venue2 (
     venue_id INT PRIMARY KEY,
     name CHAR(80),
     address CHAR(80),
-    FOREIGN KEY (name, address) REFERENCES Venue1 (name, address)
+    FOREIGN KEY (name, address) REFERENCES venue1 (name, address)
 );
 
-CREATE TABLE EventCategory (
+CREATE TABLE eventcategory (
     name CHAR(80) PRIMARY KEY
 );
 
 
-CREATE TABLE RegularUser1 (
+CREATE TABLE regularuser1 (
     name CHAR(80) PRIMARY KEY,
     email CHAR(80) NOT NULL
 );
 
-CREATE TABLE RegularUser2 (
+CREATE TABLE regularuser2 (
     name CHAR(80) PRIMARY KEY,
     address CHAR(80) NOT NULL
 );
 
-CREATE TABLE RegularUser3 (
+CREATE TABLE regularuser3 (
     user_id INT PRIMARY KEY,
     name CHAR(80),
-    FOREIGN KEY (name) REFERENCES RegularUser1 (name),
-    FOREIGN KEY (name) REFERENCES RegularUser2 (name)
+    FOREIGN KEY (name) REFERENCES regularuser1 (name),
+    FOREIGN KEY (name) REFERENCES regularuser2 (name)
 );
 
-CREATE TABLE Ticket (
+CREATE TABLE ticket (
     ticket_id INT PRIMARY KEY,
     price INT,
     booked_on DATE,
     user_id INT NOT NULL,
     host_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES RegularUser3 (user_id),
-    FOREIGN KEY (host_id) REFERENCES Host2 (host_id)
+    FOREIGN KEY (user_id) REFERENCES regularuser3 (user_id),
+    FOREIGN KEY (host_id) REFERENCES host2 (host_id)
 );
 
-CREATE TABLE TicketVendor1 (
+CREATE TABLE ticketvendor1 (
     name CHAR(80),
     address CHAR(80),
     contact CHAR(80),
     PRIMARY KEY (name, address)
 );
 
-CREATE TABLE TicketVendor2 (
+CREATE TABLE ticketvendor2 (
     vendor_id INT PRIMARY KEY,
     name CHAR(80),
     address CHAR(80),
-    FOREIGN KEY (name, address) REFERENCES TicketVendor1 (name, address)
+    FOREIGN KEY (name, address) REFERENCES ticketvendor1 (name, address)
 );
 
-CREATE TABLE UserSchedule (
+CREATE TABLE userschedule (
     user_id INT,
     schedule_id INT,
     time_block_start DATE,
     time_block_end DATE,
     PRIMARY KEY (user_id, schedule_id),
-    FOREIGN KEY (user_id) REFERENCES RegularUser3 (user_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES regularuser3 (user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE HostSchedule (
+CREATE TABLE hostschedule (
     host_id INT,
     schedule_id INT,
     time_block_start DATE,
     time_block_end DATE,
     PRIMARY KEY (host_id, schedule_id),
-    FOREIGN KEY (host_id) REFERENCES Host2 (host_id) ON DELETE CASCADE
+    FOREIGN KEY (host_id) REFERENCES host2 (host_id) ON DELETE CASCADE
 );
 
-CREATE TABLE BookedAt (
+CREATE TABLE bookedat (
     event_id INT,
     venue_id INT,
     start_date DATE,
     end_date DATE,
     PRIMARY KEY (event_id, venue_id),
-    FOREIGN KEY (event_id) REFERENCES `Event` (event_id) ON DELETE CASCADE,
-    FOREIGN KEY (venue_id) REFERENCES Venue2 (venue_id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE,
+    FOREIGN KEY (venue_id) REFERENCES venue2 (venue_id) ON DELETE CASCADE
 );
 
-CREATE TABLE PerformsAt (
+CREATE TABLE performsat (
     event_id INT,
     performer_id INT,
     PRIMARY KEY (event_id, performer_id),
-    FOREIGN KEY (event_id) REFERENCES `Event` (event_id) ON DELETE CASCADE,
-    FOREIGN KEY (performer_id) REFERENCES Performer (performer_id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE,
+    FOREIGN KEY (performer_id) REFERENCES performer (performer_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IsCategory (
+CREATE TABLE iscategory (
     event_id INT,
     category CHAR(80),
     PRIMARY KEY (event_id, category),
-    FOREIGN KEY (event_id) REFERENCES `Event` (event_id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IsFor (
+CREATE TABLE isfor (
     event_id INT,
     ticket_id INT,
     PRIMARY KEY (event_id, ticket_id),
-    FOREIGN KEY (event_id) REFERENCES `Event` (event_id) ON DELETE CASCADE,
-    FOREIGN KEY (ticket_id) REFERENCES Ticket (ticket_id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE,
+    FOREIGN KEY (ticket_id) REFERENCES ticket (ticket_id) ON DELETE CASCADE
 );
 
-CREATE TABLE Reserves (
+CREATE TABLE reserves (
     user_id INT,
     event_id INT,
     ticket_id INT,
     PRIMARY KEY (ticket_id, event_id),
-    FOREIGN KEY (event_id) REFERENCES `Event` (event_id) ON DELETE CASCADE,
-    FOREIGN KEY (ticket_id) REFERENCES Ticket (ticket_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES RegularUser3 (user_id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE,
+    FOREIGN KEY (ticket_id) REFERENCES ticket (ticket_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES regularuser3 (user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE Sells (
+CREATE TABLE sells (
     vendor_id INT,
     ticket_id INT,
     PRIMARY KEY (vendor_id, ticket_id),
-    FOREIGN KEY (vendor_id) REFERENCES TicketVendor2 (vendor_id) ON DELETE CASCADE,
-    FOREIGN KEY (ticket_id) REFERENCES Ticket (ticket_id) ON DELETE CASCADE
+    FOREIGN KEY (vendor_id) REFERENCES ticketvendor2 (vendor_id) ON DELETE CASCADE,
+    FOREIGN KEY (ticket_id) REFERENCES ticket (ticket_id) ON DELETE CASCADE
 );

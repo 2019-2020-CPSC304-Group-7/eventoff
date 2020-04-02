@@ -5,21 +5,26 @@
     </head>
     <body>
         <!-- Form for logging in -->
-        <div class="col-sm-3">
-            <form method="GET">
-                <div class="form-group">
-                    <label for="userID">User ID</label>
-                    <input class="form-control" name="userID" type="text" placeholder="Enter your user ID">
-                </div>
-                <div class="form-group">
-                    <input type="submit" name="login" class="btn btn-primary">
-                </div>
-            </form>
+        <div class="card" style="margin: 20 20 20 20;">
+            <div class="card-header">
+                User ID
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <input class="form-control" name="userID" type="text" placeholder="Enter your user ID">
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" name="login" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+            <!-- PHP for SQL -->
             <?php
                 include 'connect.php';
                 $connection = openConnection();
-                if (isset($_GET["login"])) {
-                    $userID = $_GET['userID'];
+                if (isset($_POST["login"])) {
+                    $userID = $_POST['userID'];
                     $sqlForUser = "select name from regularuser3 where user_id = $userID";
                     $sqlForHost = "select name from host2 where host_id = $userID";
                     $result = $connection->query($sqlForUser);
@@ -27,24 +32,25 @@
                     if ($result->num_rows < 1) {
                         $result = $connection->query($sqlForHost);
                         if ($result->num_rows < 1) {
-                            echo "Invalid user ID. Please try again.";
+                            echo '<div class="card-body">
+                                    <div class="alert alert-warning" role="alert">
+                                        Invalid user ID. Please try again.
+                                    </div>
+                                </div>';
                         }
                         else {
                             $username = $result->fetch_assoc();
-                            echo "Welcome " . "<b>" .$username["name"]. "</b>";
+                            $name = $username["name"];
+                            header("location: host.php?user=$name&userID=$userID");
                         }
                     }
                     else {
                         $username = $result->fetch_assoc();
-                        echo "Welcome " . "<b>" .$username["name"]. "</b>";
+                        $name = $username["name"];
+                        header("location: regularUser.php?user=$name&userID=$userID");
                     }
                 }
             ?>
-        </div>
-
-        <!-- Form for user queries -->
-        <div class="col-sm-3">
-            <p>Space for user queries.</p>
         </div>
     </body>
 </html>
