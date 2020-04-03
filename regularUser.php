@@ -28,22 +28,24 @@
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <input type="submit" name="schedule" class="btn btn-primary">
+                        <input type="submit" name="schedule" class="btn btn-primary" value="Display Schedule">
                     </div>
                 </form>
             </div>
             <!-- PHP for SQL -->
             <?php
                 if(isset($_POST["schedule"])) {
-                    $query = "select time_block_start, time_block_end
-                                from userschedule 
-                                where user_id = $userID";
+                    $query = "select e.name, e.start_date, e.end_date
+                                from purchased p, isfor i, `event` e
+                                where p.user_id = $userID AND p.ticket_id = i.ticket_id
+                                AND i.event_id = e.event_id";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
                                 <table class="table">
                                 <thead>
                                     <tr>
+                                        <th scope="col">Event</th>
                                         <th scope="col">Start Time</th>
                                         <th scope="col">End Time</th>
                                     <tr>
@@ -51,8 +53,9 @@
                                 <tbody>';
                         while ($rows = $result->fetch_assoc()) {
                             echo '<tr>
-                                    <td>' .$rows["time_block_start"]. '</td>
-                                    <td>' .$rows["time_block_end"]. '</td>
+                                    <td>' .$rows["name"]. '</td>
+                                    <td>' .$rows["start_date"]. '</td>
+                                    <td>' .$rows["end_date"]. '</td>
                                     </tr>';
                         }
                         echo '</tbody>
@@ -96,7 +99,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="findTicket" class="btn btn-primary">
+                        <input type="submit" name="findTicket" class="btn btn-primary" value="Search">
                     </div>
                 </form>
             </div>
@@ -108,7 +111,9 @@
                     $query = "select t.ticket_id as id, t.price as pr, e.name as nm
                                 from ticket t, isfor i, `event` e
                                 where t.price >= $min AND t.price <= $max
-                                AND t.ticket_id = i.ticket_id AND i.event_id = e.event_id";
+                                AND t.ticket_id = i.ticket_id AND i.event_id = e.event_id
+                                AND t.ticket_id not in (select p.ticket_id
+                                                        from purchased p)";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
@@ -173,7 +178,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="hostRating" class="btn btn-primary">
+                        <input type="submit" name="hostRating" class="btn btn-primary" value="Search">
                     </div>
                 </form>
             </div>    
@@ -250,7 +255,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="cheapestTicket" class="btn btn-primary">
+                        <input type="submit" name="cheapestTicket" class="btn btn-primary" value="Search">
                     </div>
                 </form>
             </div>
@@ -258,14 +263,19 @@
             <?php 
                 if(isset($_POST["cheapestTicket"])) {
                     $event = $_POST["eventList2"];
-                    $_SESSION["event"] = $event;
-                    $query = " select t1.price, e1.name
-                                from ticket t1, `event` e1, isfor i1
-                                where t1.ticket_id = i1.ticket_id AND i1.event_id = e1.event_id AND e1.name = '$event' AND
-                                not exists (select t2.ticket_id
-                                            from ticket t2, `event` e2, isfor i2
-                                            where t2.price < t1.price AND t2.ticket_id = i2.ticket_id 
-                                            AND i2.event_id = e2.event_id AND e2.name = '$event')";
+                    $getEventID = "select e.event_id
+                                from `event` e
+                                where e.name = '$event'";
+                    $eventResult = $connection->query($getEventID);
+                    $id = $eventResult->fetch_assoc();
+                    $eventID = $id["event_id"];
+                    $_SESSION["eventID"] = $eventID;
+                    $query = "select t.ticket_id, v.name as n1, e.name as n2, MIN(t.price) as price
+                                from sells s, ticket t, isfor i, ticketvendor2 v, event e
+                                where s.ticket_id = t.ticket_id AND s.ticket_id = i.ticket_id 
+                                AND e.event_id = $eventID AND i.event_id = e.event_id AND s.vendor_id = v.vendor_id
+                                AND t.ticket_id not in (select p.ticket_id from purchased p)
+                                group by s.vendor_id";
                     $_SESSION["cheapestTicketDataQuery"] = $query;
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
@@ -273,18 +283,25 @@
                                     <table class="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Price</th>
+                                            <th scope="col">Vendor</th>
                                             <th scope="col">Event</th>
+                                            <th scope="col">Price</th>
                                             <th scope="col">Book Ticket</th>
                                         <tr>
                                     </thead>
                                     <tbody>';
                         while ($rows = $result->fetch_assoc()) {
+                            $ticketID = $rows["ticket_id"];
                             echo '<tr>
+                                    <td>' .$rows["n1"]. '</td>
+                                    <td>' .$rows["n2"]. '</td>
                                     <td>' .$rows["price"]. '</td>
-                                    <td>' .$rows["name"]. '</td>
-                                    <td> <form method="POST"><input type="submit" name="book" class="btn btn-primary"></form> </td>
-                                    </tr>';
+                                    <td> <form method="POST">
+                                            <input type="hidden" name="ticket" value="'.$ticketID.'"/>
+                                            <input type="submit" name="book" class="btn btn-primary Book" value="Book">
+                                         </form> 
+                                    </td>
+                                   </tr>';
                         }
                         echo '</tbody>
                             </table>
@@ -299,36 +316,15 @@
                     }
                 }
                 if (isset($_POST["book"])) {
-                    include 'idGenerator.php';
-                    $newTicketID = randomTicketID($connection);
-                    $newScheduleID = randomScheduleID($connection);
-                    $event = $_SESSION["event"];
-                    $result = $connection->query($_SESSION["cheapestTicketDataQuery"]);
-                    $cheapestTicketData = $result->fetch_assoc();
-                    $price = $cheapestTicketData["price"];                    
-                    $getHostID = "select host_id, event_id, start_date, end_date
-                                    from `event`
-                                    where name = '$event'";
-                    $result1 = $connection->query($getHostID);
-                    $eventData = $result1->fetch_assoc();
-                    $hostID = $eventData["host_id"];
-                    $eventID = $eventData["event_id"];
-                    $start = $eventData["start_date"];
-                    $end = $eventData["end_date"];
-                    $addNewTicket = "insert into ticket(ticket_id, price, booked_on, user_id, host_id)
-                                        values($newTicketID, $price, '2020-04-05', $userID, $hostID)";
-                    $addTicketToIsFor = "insert into isfor(event_id, ticket_id)
-                                            values($eventID, $newTicketID)";
-                    $addToSchedule = "insert into userschedule(user_id, schedule_id, time_block_start, time_block_end)
-                                        values($userID, $newScheduleID, '$start', '$end')";
-                    if ($connection->query($addNewTicket) === FALSE || 
-                        $connection->query($addTicketToIsFor) === FALSE ||
-                        $connection->query($addToSchedule) === FALSE) {
-                        echo '<div class="card-body">
-                                <div class="alert alert-warning" role="alert">
-                                    Error Booking the ticket.
-                                </div>
-                                </div>';
+                    $ticketID =  $_POST["ticket"];
+                    $addToPurchased = "insert into purchased(user_id, ticket_id)
+                                        values($userID, $ticketID)";
+                    if ($connection->query($addToPurchased) === FALSE) {
+                            echo '<div class="card-body">
+                                    <div class="alert alert-warning" role="alert">
+                                        Could Not book the ticket. Please try again.
+                                    </div>
+                                    </div>';
                     }
                     else {
                         echo '<div class="card-body">
