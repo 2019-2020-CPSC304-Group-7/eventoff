@@ -42,12 +42,12 @@ select user_id from regularuser3 ru where not exists (select e.event_id from 'ev
 
 
 SELECT ru.user_id
-FROM FROM regularuser3 RU
+FROM regularuser3 RU
 WHERE NOT EXISTS    (SELECT e.event_id
-                     FROM 'event' E
+                     FROM `event` E
                      WHERE NOT EXISTS   (SELECT r.user_id
-                                         FROM reserves R
-                                         WHERE e.event_id = r.event_id AND r.user_id = ru.user_id));
+                                         FROM purchased R, isfor I
+                                         WHERE e.event_id = i.event_id AND r.ticket_id = i.ticket_id AND r.user_id = ru.user_id));
 
 
 
