@@ -21,27 +21,32 @@
         </div>
         <!-- Forms for host queries -->
 
-        <!-- Display all events of this host -->
+        <!-- Quick Actions -->
         <div class="card" style="margin: 20 20 20 20;">
             <div class="card-header">
-                Show all Events
+                <b>Quick Actions</b>
             </div>
             <div class="card-body">
                 <form method="POST">
-                    <div class="form-group">
-                        <input type="submit" name="events" class="btn btn-primary" value="Show Events">
+                    <div class="form-row">
+                        <div class="col-md-3 mb-3">
+                            <input type="submit" name="events" class="btn btn-primary" value="See All Your Events">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <input type="submit" name="allPeople" class="btn btn-primary" value="Get Everyone Attending Your Event">
+                        </div>
                     </div>
                 </form>
             </div>
-            <!-- PHP for SQL -->
+            <!-- PHP for All Events -->
             <?php 
                 if(isset($_POST["events"])) {
-                    $query = "select e.name as n1, e.start_date, e.end_date, e.ranking, v.name as n2, count(p.ticket_id) as attendance
-                                from `event` e, bookedat b, venue2 v, isfor i, purchased p
-                                where e.host_id = $userID AND e.event_id = b.event_id
+                    $query = "SELECT e.name as n1, e.start_date, e.end_date, e.ranking, v.name as n2, COUNT(p.ticket_id) as attendance
+                                FROM `event` e, bookedat b, venue2 v, isfor i, purchased p
+                                WHERE e.host_id = $userID AND e.event_id = b.event_id
                                 AND b.venue_id = v.venue_id AND e.event_id = i.event_id AND i.ticket_id = p.ticket_id
-                                group by e.name
-                                order by Attendance desc";
+                                GROUP BY e.name
+                                ORDER BY Attendance DESC";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
@@ -80,6 +85,53 @@
                     }
                 }
             ?>
+
+            <!-- PHP for get all people -->
+            <?php
+                if (isset($_POST["allPeople"])) {
+                    $query = "SELECT r3.name, r2.address, r1.email
+                                FROM regularuser3 r3, regularuser2 r2, regularuser1 r1
+                                WHERE r3.name = r2.name AND r2.name = r1.name 
+                                AND NOT EXISTS 
+                                    (SELECT e.event_id 
+                                    FROM `event` e 
+                                    WHERE e.host_id = $userID 
+                                    AND NOT EXISTS 
+                                        (SELECT p.user_id 
+                                            FROM purchased p, isfor i 
+                                            WHERE e.event_id = i.event_id AND p.ticket_id = i.ticket_id AND p.user_id = r3.user_id))";
+                    $result = $connection->query($query);
+                    if ($result->num_rows > 0) {
+                        echo '<div class="card-body">
+                                <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Address</th>
+                                        <th scope="col">Email</th>
+                                    <tr>
+                                </thead>
+                                <tbody>';
+                        while ($rows = $result->fetch_assoc()) {
+                            echo '<tr>
+                                    <td>' .$rows["name"]. '</td>
+                                    <td>' .$rows["address"]. '</td>
+                                    <td>' .$rows["email"]. '</td>
+                                    </tr>';
+                        }
+                        echo '</tbody>
+                            </table>
+                            </div>';
+                    }
+                    else {
+                        echo '<div class="card-body">
+                            <div class="alert alert-warning" role="alert">
+                                No Results Found.
+                            </div>
+                            </div>';
+                    }
+                }
+            ?>
         </div>
 
         <!-- Add tickets for an event -->
@@ -95,7 +147,8 @@
                                 <span class="input-group-text" id="basic-addon3">Event</span>
                             </div>
                             <?php
-                                $query = "select name from `event` where host_id = $userID";
+                                $query = "SELECT name 
+                                            FROM `event` WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
                             <select name="eventList" class="form-control">
@@ -125,7 +178,8 @@
                                 <span class="input-group-text" id="basic-addon3">Vendor</span>
                             </div>
                             <?php
-                                $query = "select name from ticketvendor2";
+                                $query = "SELECT name 
+                                            FROM ticketvendor2";
                                 $result = $connection->query($query);
                             ?>
                             <select name="vendorList" class="form-control">
@@ -153,12 +207,12 @@
                     $price = $_POST["price"];
                     $event = $_POST["eventList"];
                     $vendor = $_POST["vendorList"];
-                    $getVendorID = "select vendor_id
-                                    from ticketvendor2
-                                    where name = '$vendor'";
-                    $getEventID = "select e.event_id
-                                from `event` e
-                                where e.name = '$event' AND e.host_id = $userID";
+                    $getVendorID = "SELECT vendor_id
+                                    FROM ticketvendor2
+                                    WHERE name = '$vendor'";
+                    $getEventID = "SELECT e.event_id
+                                FROM `event` e
+                                WHERE e.name = '$event' AND e.host_id = $userID";
                     $vendorResult = $connection->query($getVendorID);
                     $vendorData = $vendorResult->fetch_assoc();
                     $vendorID = $vendorData["vendor_id"];
@@ -166,9 +220,9 @@
                     $eventData = $eventResult->fetch_assoc();
                     $eventID = $eventData["event_id"];
                     $ticketID = randomTicketID($connection);
-                    $addToTickets = "insert into ticket(ticket_id, price) values($ticketID, $price)";
-                    $addToIsFor = "insert into isfor(ticket_id, event_id) values($ticketID, $eventID)";
-                    $addToSells = "insert into sells(vendor_id, ticket_id) values($vendorID, $ticketID)";
+                    $addToTickets = "INSERT INTO ticket(ticket_id, price) VALUES($ticketID, $price)";
+                    $addToIsFor = "INSERT INTO isfor(ticket_id, event_id) VALUES($ticketID, $eventID)";
+                    $addToSells = "INSERT INTO sells(vendor_id, ticket_id) VALUES($vendorID, $ticketID)";
                     if ($connection->query($addToTickets) === FALSE ||
                         $connection->query($addToIsFor) === FALSE ||
                         $connection->query($addToSells) === FALSE) {
@@ -189,71 +243,6 @@
             ?>
         </div>        
 
-        <!-- Delete Event -->
-        <div class="card" style="margin: 20 20 20 20;">
-            <div class="card-header">
-                Delete an Event
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
-                            </div>
-                            <?php
-                                $query = "select name from `event` where host_id = $userID";
-                                $result = $connection->query($query);
-                            ?>
-                            <select name="eventList" class="form-control">
-                            <?php 
-                                while ($row = $result->fetch_assoc()) {
-                            ?>
-                            <option value="<?php echo $row['name'];?>">
-                                <?php echo $row['name'];?>
-                            </option>
-                            <?php
-                                }
-                            ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" name="deleteEvent" class="btn btn-warning" value="Delete">
-                    </div>
-                </form>
-            </div>
-            <!-- add php -->
-            <?php
-                if(isset($_POST["deleteEvent"])) {
-                    $event = $_POST["eventList"];
-                    $query = "select e.event_id
-                                from `event` e
-                                where e.name = '$event' AND e.host_id = $userID";
-                    $result = $connection->query($query);
-                    $id = $result->fetch_assoc();
-                    $eventID = $id["event_id"];
-                    $deleteQuery = "delete 
-                                    from `event`
-                                    where event_id = $eventID";
-                    if ($connection->query($deleteQuery) === TRUE) {
-                        echo '<div class="card-body">
-                            <div class="alert alert-success" role="alert">'
-                                .$event. ' was successfully deleted.
-                            </div>
-                            </div>';
-                    }
-                    else {
-                        echo '<div class="card-body">
-                            <div class="alert alert-warning" role="alert">
-                                Error deleting ' .$event. '
-                            </div>
-                            </div>';
-                    }
-                }
-            ?>
-        </div>
-
         <!-- Update Event -->
         <div class="card" style="margin: 20 20 20 20;">
             <div class="card-header">
@@ -268,7 +257,9 @@
                                 <span class="input-group-text" id="basic-addon3">Event</span>
                             </div>
                             <?php
-                                $query = "select name, event_id from `event` where host_id = $userID";
+                                $query = "SELECT name, event_id 
+                                            FROM `event` 
+                                            WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
                             <select name="eventList" class="form-control">
@@ -320,18 +311,18 @@
             <?php
                 if (isset($_POST["updateEvent"])) {
                     $event = $_POST["eventList"];
-                    $query = "select e.event_id
-                                from `event` e
-                                where e.name = '$event' AND e.host_id = $userID";
+                    $query = "SELECT e.event_id
+                                FROM `event` e
+                                WHERE e.name = '$event' AND e.host_id = $userID";
                     $result = $connection->query($query);
                     $id = $result->fetch_assoc();
                     $eventID = $id["event_id"];
                     $name = $_POST["eventName"];
                     $startDate = $_POST["start"];
                     $endDate = $_POST["end"];
-                    $updateQuery = "update `event`
-                                    set name = '$name', start_date = '$startDate', end_date = '$endDate'
-                                    where event_id = $eventID";
+                    $updateQuery = "UPDATE `event`
+                                    SET name = '$name', start_date = '$startDate', end_date = '$endDate'
+                                    WHERE event_id = $eventID";
                     if ($connection->query($updateQuery) === TRUE) {
                         echo '<div class="card-body">
                             <div class="alert alert-success" role="alert">'
@@ -387,9 +378,9 @@
                 if (isset($_POST["venueSearch"])) {
                     $atLeast = $_POST["capacity"];
                     if ($atLeast != "") {
-                        $atleastQuery = "select *
-                                        from venue1 
-                                        where venue1.capacity >= '$atLeast'";
+                        $atleastQuery = "SELECT *
+                                        FROM venue1 
+                                        WHERE venue1.capacity >= '$atLeast'";
                         $result = $connection->query($atleastQuery);
                         if ($result->num_rows > 0) {
                             echo '<div class="card-body">
@@ -422,11 +413,11 @@
                         }
                     }
                     else if (isset($_POST["minimum"])) {
-                        $minimumQuery = "select *
-                                        from venue1 v1
-                                        where not exists (select *
-                                                            from venue1 v2
-                                                            where v2.capacity < v1.capacity)";
+                        $minimumQuery = "SELECT *
+                                        FROM venue1 v1
+                                        WHERE NOT EXISTS (SELECT *
+                                                            FROM venue1 v2
+                                                            WHERE v2.capacity < v1.capacity)";
                         $result = $connection->query($minimumQuery);
                         if ($result->num_rows > 0) {
                             echo '<div class="card-body">
@@ -459,11 +450,11 @@
                         }
                     }
                     else if (isset($_POST["maximum"])) {
-                        $maximumQuery = "select *
-                                        from venue1 v1
-                                        where not exists (select *
-                                                            from venue1 v2
-                                                            where v2.capacity > v1.capacity)";
+                        $maximumQuery = "SELECT *
+                                        FROM venue1 v1
+                                        WHERE NOT EXISTS (SELECT *
+                                                            FROM venue1 v2
+                                                            WHERE v2.capacity > v1.capacity)";
                         $result = $connection->query($maximumQuery);
                         if ($result->num_rows > 0) {
                             echo '<div class="card-body">
@@ -499,38 +490,64 @@
             ?>
         </div>
 
-        <!-- Get all people attending all events of a host -->
+        <!-- Find people that attend one of your events -->
         <div class="card" style="margin: 20 20 20 20;">
             <div class="card-header">
-                Get All People Attending All Events Hosted By You
+                Find People Attending One of Your Events
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <input type="submit" name="allPeople" class="btn btn-primary" value="Search">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">Event</span>
+                            </div>
+                            <?php
+                                $query = "SELECT name 
+                                            FROM `event` 
+                                            WHERE host_id = $userID";
+                                $result = $connection->query($query);
+                            ?>
+                            <select name="eventList" class="form-control">
+                            <?php 
+                                while ($row = $result->fetch_assoc()) {
+                            ?>
+                            <option value="<?php echo $row['name'];?>">
+                                <?php echo $row['name'];?>
+                            </option>
+                            <?php
+                                }
+                            ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" name="peopleAttending" class="btn btn-primary" value="Search">
                     </div>
                 </form>
             </div>
-            <!-- add php -->
+            <!-- add php for sql -->
             <?php
-                if (isset($_POST["allPeople"])) {
-                    $query = "select r3.name, r2.address, r1.email
-                                from regularuser3 r3, regularuser2 r2, regularuser1 r1
-                                where r3.name = r2.name AND r2.name = r1.name AND not exists 
-                                    (select e.event_id 
-                                    from event e 
-                                    where e.host_id = $userID 
-                                    AND not exists 
-                                        (select p.user_id 
-                                            from purchased p, isfor i 
-                                            where e.event_id = i.event_id AND p.ticket_id = i.ticket_id AND p.user_id = r3.user_id))";
+                if(isset($_POST["peopleAttending"])) {
+                    $event = $_POST["eventList"];
+                    $query = "SELECT e.event_id
+                                FROM `event` e
+                                WHERE e.name = '$event' AND e.host_id = $userID";
+                    $result = $connection->query($query);
+                    $id = $result->fetch_assoc();
+                    $eventID = $id["event_id"];
+                    $query = "SELECT DISTINCT r3.name, r2.address, r1.email
+                                FROM `event` e, regularuser3 r3, regularuser2 r2, regularuser1 r1, purchased p, isfor i, ticket t
+                                WHERE e.event_id = $eventID AND e.event_id = i.event_id AND t.ticket_id = i.ticket_id
+                                AND i.ticket_id = p.ticket_id AND p.user_id = r3.user_id AND r3.name = r2.name
+                                AND r3.name = r1.name";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
                                 <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Name</th>
+                                        <th scope="col">Attendee</th>
                                         <th scope="col">Address</th>
                                         <th scope="col">Email</th>
                                     <tr>
@@ -571,7 +588,9 @@
                                 <span class="input-group-text" id="basic-addon3">Event</span>
                             </div>
                             <?php
-                                $query = "select name from `event` where host_id = $userID";
+                                $query = "SELECT name 
+                                            FROM `event` 
+                                            WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
                             <select name="eventList" class="form-control">
@@ -596,15 +615,15 @@
             <?php
                 if(isset($_POST["performerContactInfo"])) {
                     $event = $_POST["eventList"];
-                    $query = "select e.event_id
-                                from `event` e
-                                where e.name = '$event' AND e.host_id = $userID";
+                    $query = "SELECT e.event_id
+                                FROM `event` e
+                                WHERE e.name = '$event' AND e.host_id = $userID";
                     $result = $connection->query($query);
                     $id = $result->fetch_assoc();
                     $eventID = $id["event_id"];
-                    $query = "select p.name, p.contact
-                                from `event` e, performsat pat, performer p
-                                where e.event_id = $eventID AND e.event_id = pat.event_id 
+                    $query = "SELECT p.name, p.contact
+                                FROM `event` e, performsat pat, performer p
+                                WHERE e.event_id = $eventID AND e.event_id = pat.event_id 
                                 AND pat.performer_id = p.performer_id";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
@@ -631,6 +650,73 @@
                         echo '<div class="card-body">
                             <div class="alert alert-warning" role="alert">
                                 No Results Found.
+                            </div>
+                            </div>';
+                    }
+                }
+            ?>
+        </div>
+
+        <!-- Delete Event -->
+        <div class="card" style="margin: 20 20 20 20;">
+            <div class="card-header">
+                Delete an Event
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="form-group">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">Event</span>
+                            </div>
+                            <?php
+                                $query = "SELECT name 
+                                            FROM `event` 
+                                            WHERE host_id = $userID";
+                                $result = $connection->query($query);
+                            ?>
+                            <select name="eventList" class="form-control">
+                            <?php 
+                                while ($row = $result->fetch_assoc()) {
+                            ?>
+                            <option value="<?php echo $row['name'];?>">
+                                <?php echo $row['name'];?>
+                            </option>
+                            <?php
+                                }
+                            ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" name="deleteEvent" class="btn btn-warning" value="Delete">
+                    </div>
+                </form>
+            </div>
+            <!-- add php -->
+            <?php
+                if(isset($_POST["deleteEvent"])) {
+                    $event = $_POST["eventList"];
+                    $query = "SELECT e.event_id
+                                FROM `event` e
+                                WHERE e.name = '$event' AND e.host_id = $userID";
+                    $result = $connection->query($query);
+                    $id = $result->fetch_assoc();
+                    $eventID = $id["event_id"];
+                    $deleteQuery = "DELETE 
+                                    FROM `event`
+                                    WHERE event_id = $eventID";
+                    if ($connection->query($deleteQuery) === TRUE) {
+                        echo '<div class="card-body">
+                            <div class="alert alert-success" role="alert">'
+                                .$event. ' was successfully deleted.
+                            </div>
+                            </div>';
+                    }
+                    else {
+                        echo '<div class="card-body">
+                            <div class="alert alert-warning" role="alert">
+                                Error deleting ' .$event. '
                             </div>
                             </div>';
                     }
