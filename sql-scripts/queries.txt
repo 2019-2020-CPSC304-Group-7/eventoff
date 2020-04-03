@@ -41,8 +41,13 @@ HAVING
 
 Find all performers who perform at all events (or a combination of events)
 
-SELECT
-FROM
-WHERE
-GROUP BY
-HAVING
+select user_id from regularuser3 ru where not exists (select e.event_id from 'event' e where not exists (select r.user_id from reserves r where e.event_id = r.event_id and r.user_id = ru.user_id));
+
+
+SELECT ru.user_id
+FROM FROM regularuser3 RU
+WHERE NOT EXISTS    (SELECT e.event_id
+                     FROM 'event' E
+                     WHERE NOT EXISTS   (SELECT r.user_id
+                                         FROM reserves R
+                                         WHERE e.event_id = r.event_id AND r.user_id = ru.user_id));
