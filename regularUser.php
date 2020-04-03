@@ -342,13 +342,13 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="cheapestTicket" class="btn btn-primary" value="Search">
+                        <input type="submit" name="findCheapestTicket" class="btn btn-primary" value="Search">
                     </div>
                 </form>
             </div>
             <!-- PHP for SQL -->
             <?php 
-                if(isset($_POST["cheapestTicket"])) {
+                if(isset($_POST["findCheapestTicket"])) {
                     $event = $_POST["eventList2"];
                     $getEventID = "SELECT e.event_id
                                 FROM `event` e
