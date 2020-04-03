@@ -31,13 +31,10 @@ WHERE v1.name = v2.name AND v1.address = v2.address AND v1.capacity = (SELECT MA
 
 Find the minimum ticket price for an event by each ticket vendor
 
-SELECT
-FROM
-WHERE
-GROUP BY
-HAVING
-
-
+SELECT s.ticket_id, s.vendor_id, MIN(t.price)
+FROM sells s, ticket t, isfor i
+WHERE s.ticket_id = t.ticket_id AND s.ticket_id = i.ticket_id AND i.event_id = current event
+GROUP BY s.vendor_id
 
 Find all performers who perform at all events (or a combination of events)
 
@@ -51,3 +48,9 @@ WHERE NOT EXISTS    (SELECT e.event_id
                      WHERE NOT EXISTS   (SELECT r.user_id
                                          FROM reserves R
                                          WHERE e.event_id = r.event_id AND r.user_id = ru.user_id));
+
+
+
+SELECT e.start_date, e.end_date
+FROM `event` e, regularuser3 u, reserves r
+WHERE u.user_id = r.user_id AND r.event_id = e.event_id
