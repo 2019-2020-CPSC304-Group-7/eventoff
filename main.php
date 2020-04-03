@@ -7,7 +7,7 @@
         <!-- Form for logging in -->
         <div class="card" style="margin: 20 20 20 20;">
             <div class="card-header">
-                User ID
+                <b>User ID</b>
             </div>
             <div class="card-body">
                 <form method="POST">
@@ -15,7 +15,7 @@
                         <input class="form-control" name="userID" type="text" placeholder="Enter your user ID">
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="login" class="btn btn-primary">
+                        <input type="submit" name="login" class="btn btn-primary" value="Login">
                     </div>
                 </form>
             </div>
