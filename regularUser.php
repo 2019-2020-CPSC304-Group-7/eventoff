@@ -12,17 +12,19 @@
         EventOFF
     </title>
     </head>
-        <body>
+        <body style="background-color: black;">
         <!-- Forms for user queries -->
 
-        <div class="alert alert-success" role="alert">
-            <?php
-                echo '<h5>Welcome <b>' .$name. '</b></h5>';
-            ?>
+        <div class="container">
+            <div class="alert alert-success" role="alert">
+                <?php
+                    echo '<h5>Welcome <b>' .$name. '</b></h5>';
+                ?>
+            </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
                 <b>Quick Actions</b>
             </div>
@@ -49,7 +51,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table  text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Event</th>
@@ -89,7 +91,7 @@
                     $eventsResult = $connection->query($getEvents);
                     if ($eventsResult->num_rows > 0) {
                         echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table  text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Event</th>
@@ -129,7 +131,7 @@
         </div>
 
         <!-- Find ticket by price form -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
                 <b>Find Tickets By Price</b>
             </div>
@@ -137,19 +139,19 @@
                 <form method="POST">
                     <div class="form-row">
                         <div class="col-md-3 mb-3">
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon3">Minimum Price</span>
+                            <div class="input-group mb-3 text-white bg-dark">
+                                <div class="input-group-prepend text-white bg-dark">
+                                    <span class="input-group-text text-white bg-dark" id="basic-addon3">Minimum Price</span>
                                 </div>
-                                <input name="minimum" type="text" class="form-control">
+                                <input name="minimum" type="text" class="form-control text-white bg-dark">
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon3">Maximum Price</span>
+                            <div class="input-group mb-3 text-white bg-dark">
+                                <div class="input-group-prepend text-white bg-dark">
+                                    <span class="input-group-text text-white bg-dark" id="basic-addon3">Maximum Price</span>
                                 </div>
-                                <input name="maximum" type="text" class="form-control">
+                                <input name="maximum" type="text" class="form-control text-white bg-dark">
                             </div>
                         </div>
                     </div>
@@ -173,7 +175,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                    <table class="table">
+                                    <table class="table  text-white bg-dark">
                                     <thead>
                                         <tr>
                                             <th scope="col">Event</th>
@@ -231,23 +233,23 @@
         </div>
 
         <!-- Host's rating for a given event -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
                 <b>Check a Host's Rating</b>
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Event</span>
                             </div>
                             <?php
                                 $query = "SELECT name 
                                             FROM `event`";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="eventList1" class="form-control">
+                            <select name="eventList1" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
@@ -275,7 +277,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                    <table class="table">
+                                    <table class="table  text-white bg-dark">
                                     <thead>
                                         <tr>
                                             <th scope="col">Host</th>
@@ -309,23 +311,23 @@
         </div>
 
         <!-- Find the cheapest ticket for an event and Book-->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
                 <b>Find The Cheapest Ticket</b>
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Event</span>
                             </div>
                             <?php
                                 $query = "SELECT name 
                                             FROM `event`";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="eventList2" class="form-control">
+                            <select name="eventList2" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
@@ -364,7 +366,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                    <table class="table">
+                                    <table class="table  text-white bg-dark">
                                     <thead>
                                         <tr>
                                             <th scope="col">Vendor</th>

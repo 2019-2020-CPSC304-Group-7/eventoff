@@ -13,16 +13,18 @@
         EventOFF
     </title>
     </head>
-    <body>
-        <div class="alert alert-success" role="alert">
-            <?php
-                echo '<h5>Welcome <b>' .$name. '</b></h5>';
-            ?>
+    <body style="background-color: black;">
+        <div class="container">
+            <div class="alert alert-success" role="alert">
+                <?php
+                    echo '<h5>Welcome <b>' .$name. '</b></h5>';
+                ?>
+            </div>
         </div>
         <!-- Forms for host queries -->
 
         <!-- Quick Actions -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
                 <b>Quick Actions</b>
             </div>
@@ -50,7 +52,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Event Name</th>
@@ -103,7 +105,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Name</th>
@@ -135,23 +137,23 @@
         </div>
 
         <!-- Add tickets for an event -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
-                Add a Ticket for one of Your Events
+                <b>Add a Ticket for one of Your Events</b>
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Event</span>
                             </div>
                             <?php
                                 $query = "SELECT name 
                                             FROM `event` WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="eventList" class="form-control">
+                            <select name="eventList" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
@@ -165,24 +167,24 @@
                         </div>
                         <div class="form-row">
                             <div class="col-md-3">
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon3">$</span>
+                                <div class="input-group mb-3 text-white bg-dark">
+                                    <div class="input-group-prepend text-white bg-dark">
+                                        <span class="input-group-text text-white bg-dark" id="basic-addon3">$</span>
                                     </div>
-                                    <input type="number" name="price" class="form-control">
+                                    <input type="number" name="price" class="form-control text-white bg-dark">
                                 </div>
                             </div>
                         </div>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Vendor</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Vendor</span>
                             </div>
                             <?php
                                 $query = "SELECT name 
                                             FROM ticketvendor2";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="vendorList" class="form-control">
+                            <select name="vendorList" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
@@ -244,17 +246,17 @@
         </div>        
 
         <!-- Update Event -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
-                Update an Event
+                <b>Update an Event</b>
             </div>
             <div class="card-body">
                 <form method="POST">
 
                     <div class="form-row">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Event</span>
                             </div>
                             <?php
                                 $query = "SELECT name, event_id 
@@ -262,7 +264,7 @@
                                             WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="eventList" class="form-control">
+                            <select name="eventList" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
@@ -278,27 +280,27 @@
 
                     <div class="form-row">
                         <div class="col-md-3 mb-3">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Name</span>
+                            <div class="input-group text-white bg-dark">
+                                <div class="input-group-prepend text-white bg-dark">
+                                    <span class="input-group-text text-white bg-dark">Name</span>
                                 </div>
-                                <input type="text" class="form-control" name="eventName">
+                                <input type="text" class="form-control text-white bg-dark" name="eventName">
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Start Date</span>
+                            <div class="input-group text-white bg-dark">
+                                <div class="input-group-prepend text-white bg-dark">
+                                    <span class="input-group-text text-white bg-dark">Start Date</span>
                                 </div>
-                                <input type="text" class="form-control" name="start" placeHolder="YYYY-MM-DD HH:MM:SS">
+                                <input type="text" class="form-control text-white bg-dark" name="start" placeHolder="YYYY-MM-DD HH:MM:SS">
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">End Date</span>
+                            <div class="input-group text-white bg-dark">
+                                <div class="input-group-prepend text-white bg-dark">
+                                    <span class="input-group-text text-white bg-dark">End Date</span>
                                 </div>
-                                <input type="text" class="form-control" name="end" placeHolder="YYYY-MM-DD HH:MM:SS">
+                                <input type="text" class="form-control text-white bg-dark" name="end" placeHolder="YYYY-MM-DD HH:MM:SS">
                             </div>
                         </div>
                     </div>
@@ -342,29 +344,29 @@
         </div>
 
         <!-- Find Venues -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
-                Search for Venues
+                <b>Search for Venues</b>
             </div>
             <div class="card-body">
                 <form class="form-inline" method="POST">
-                    <div class="input-group mb-2 mr-sm-2">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
+                    <div class="input-group mb-2 mr-sm-2 text-white bg-dark">
+                        <div class="input-group-prepend text-white bg-dark">
+                            <div class="input-group-text text-white bg-dark">
                                 Accomodates At Least
                             </div>
                         </div>
-                        <input type="text" class="form-control" id="inlineFormInputGroupUsername2" name="capacity">
+                        <input type="text" class="form-control text-white bg-dark" id="inlineFormInputGroupUsername2" name="capacity">
                     </div>
-                    <div class="form-check mb-2 mr-sm-2">
-                        <input class="form-check-input" type="checkbox" id="inlineFormCheck" name="minimum">
-                        <label class="form-check-label" for="inlineFormCheck">
+                    <div class="form-check mb-2 mr-sm-2 text-white bg-dark">
+                        <input class="form-check-input text-white bg-dark" type="checkbox" id="inlineFormCheck" name="minimum">
+                        <label class="form-check-label text-white bg-dark" for="inlineFormCheck">
                             Minimum Capacity
                         </label>
                     </div>
-                    <div class="form-check mb-2 mr-sm-2">
-                        <input class="form-check-input" type="checkbox" id="inlineFormCheck" name="maximum">
-                        <label class="form-check-label" for="inlineFormCheck">
+                    <div class="form-check mb-2 mr-sm-2 text-white bg-dark">
+                        <input class="form-check-input text-white bg-dark" type="checkbox" id="inlineFormCheck" name="maximum">
+                        <label class="form-check-label text-white bg-dark" for="inlineFormCheck">
                             Maximum Capacity
                         </label>
                     </div>
@@ -384,7 +386,7 @@
                         $result = $connection->query($atleastQuery);
                         if ($result->num_rows > 0) {
                             echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Name</th>
@@ -421,7 +423,7 @@
                         $result = $connection->query($minimumQuery);
                         if ($result->num_rows > 0) {
                             echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Name</th>
@@ -458,7 +460,7 @@
                         $result = $connection->query($maximumQuery);
                         if ($result->num_rows > 0) {
                             echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Name</th>
@@ -491,16 +493,16 @@
         </div>
 
         <!-- Find people that attend one of your events -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
-                Find People Attending One of Your Events
+                <b>Find People Attending One of Your Events</b>
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Event</span>
                             </div>
                             <?php
                                 $query = "SELECT name 
@@ -508,7 +510,7 @@
                                             WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="eventList" class="form-control">
+                            <select name="eventList" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
@@ -544,7 +546,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Attendee</th>
@@ -576,16 +578,16 @@
         </div>
 
         <!-- Find contact info for all performers of your event -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
                 Get Emails of Performers For an Event you Host
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Event</span>
                             </div>
                             <?php
                                 $query = "SELECT name 
@@ -593,7 +595,7 @@
                                             WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="eventList" class="form-control">
+                            <select name="eventList" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
@@ -628,7 +630,7 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                <table class="table">
+                                <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
                                         <th scope="col">Performer</th>
@@ -658,16 +660,16 @@
         </div>
 
         <!-- Delete Event -->
-        <div class="card" style="margin: 20 20 20 20;">
+        <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
             <div class="card-header">
                 Delete an Event
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Event</span>
+                        <div class="input-group mb-3 text-white bg-dark">
+                            <div class="input-group-prepend text-white bg-dark">
+                                <span class="input-group-text text-white bg-dark" id="basic-addon3">Event</span>
                             </div>
                             <?php
                                 $query = "SELECT name 
@@ -675,7 +677,7 @@
                                             WHERE host_id = $userID";
                                 $result = $connection->query($query);
                             ?>
-                            <select name="eventList" class="form-control">
+                            <select name="eventList" class="form-control text-white bg-dark">
                             <?php 
                                 while ($row = $result->fetch_assoc()) {
                             ?>
