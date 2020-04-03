@@ -8,7 +8,7 @@
         <div class="container">
             <div class="card text-white bg-dark mb-3" style="margin: 20 20 20 20;">
                 <div class="card-header">
-                    <b>User ID</b>
+                    <b>Login</b>
                 </div>
                 <div class="card-body">
                     <form method="POST">
