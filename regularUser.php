@@ -47,7 +47,8 @@
                     $query = "SELECT DISTINCT e.name, e.start_date, e.end_date
                                 FROM purchased p, isfor i, `event` e
                                 WHERE p.user_id = $userID AND p.ticket_id = i.ticket_id
-                                AND i.event_id = e.event_id";
+                                AND i.event_id = e.event_id
+                                ORDER BY e.start_date";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
