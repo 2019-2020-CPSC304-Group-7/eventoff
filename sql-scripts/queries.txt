@@ -1,56 +1,170 @@
-Select all tickets costing between a range
+- Queries for login:
 
-SELECT ticket_id
-FROM ticket
-WHERE price > r1 AND price < r2
+- For a regular user
+    - $userID is a user input
+
+SELECT name 
+FROM regularuser3 
+WHERE user_id = $userID
+
+- For a host
+    - $userID is a user input
+
+SELECT name 
+FROM host2 
+WHERE host_id = $userID
+
+=========================================================================================================
+
+- Queries for a regular user:
+
+- Select all the unsold tickets, corresponding events and ticket vendors 
+costing between a range (input by user), ordered by price
+    - $min, $max are user inputs
+
+SELECT t.ticket_id as id, t.price as pr, e.name as nm1, v.name as nm2
+FROM ticket t, isfor i, `event` e, ticketvendor2 v, sells s
+WHERE t.price >= $min AND t.price <= $max
+    AND t.ticket_id = i.ticket_id AND i.event_id = e.event_id
+    AND s.ticket_id = t.ticket_id AND s.vendor_id = v.vendor_id
+    AND t.ticket_id NOT IN (SELECT p.ticket_id FROM purchased p)
+ORDER BY t.price ASC
 
 
-Get all the time blocks from a schedule.
+- Get all the time blocks for a user based on the events the user 
+has bought a ticket for, ordered by start time
+    - $userID is transferred from the login page
 
-SELECT time_block_start, time_block_end
-FROM userschedule/hostschedule
-WHERE user_id/host_id = current user
+SELECT DISTINCT e.name, e.start_date, e.end_date
+FROM purchased p, isfor i, `event` e
+WHERE p.user_id = $userID AND p.ticket_id = i.ticket_id
+    AND i.event_id = e.event_id
+ORDER BY e.start_date
 
 
+- Get all events and their hosts in a particular event category, 
+ordered by start date
+    - $category is a user input
 
-Join host and event to get the rating of the host hosting an event
+SELECT e.name as n1, e.start_date, e.end_date, e.ranking as r1, h.name as n2, h.rating as r2
+FROM `event` e, host2 h, iscategory i
+WHERE e.host_id = h.host_id AND i.event_id = e.event_id AND i.category = '$category'
+ORDER BY e.start_date ASC
 
-SELECT h.rating
+
+- Find the host's details for a given event
+    - $event is a user input
+
+SELECT h.name as n1, h.email, h.rating, e.name as n2
 FROM host2 h, event e
-WHERE h.host_id = e.host_id & e.event_id = current event id
+WHERE h.host_id = e.host_id AND e.name = '$event'
 
 
+- Find the minimum ticket price, corresponding ticket vendor and event
+for unsold tickets for an event by each ticket vendor
+    - $eventID is a user input
 
-Find the venue(s) with the min/max capacity (min/max)
-
-SELECT v2.venue_id
-FROM venue1 v1, venue2 v2
-WHERE v1.name = v2.name AND v1.address = v2.address AND v1.capacity = (SELECT MAX(v3capacity) FROM venue1 v3)
-
-
-
-Find the minimum ticket price for an event by each ticket vendor
-
-SELECT s.ticket_id, s.vendor_id, MIN(t.price)
-FROM sells s, ticket t, isfor i
-WHERE s.ticket_id = t.ticket_id AND s.ticket_id = i.ticket_id AND i.event_id = current event
+SELECT t.ticket_id, v.name as n1, e.name as n2, MIN(t.price) as price
+FROM sells s, ticket t, isfor i, ticketvendor2 v, event e
+WHERE s.ticket_id = t.ticket_id AND s.ticket_id = i.ticket_id 
+        AND e.event_id = $eventID AND i.event_id = e.event_id AND s.vendor_id = v.vendor_id
+        AND t.ticket_id NOT IN (SELECT p.ticket_id FROM purchased p)
 GROUP BY s.vendor_id
 
-Find all performers who perform at all events (or a combination of events)
+=========================================================================================================
 
-select user_id from regularuser3 ru where not exists (select e.event_id from 'event' e where not exists (select r.user_id from reserves r where e.event_id = r.event_id and r.user_id = ru.user_id));
+Queries for a host:
+
+- Find all the events hosted by a host, their venues and tickets sold,
+ordered by number of tickets sold
+    - $userID is transferred from the login page
+
+SELECT e.name as n1, e.start_date, e.end_date, e.ranking, v.name as n2, COUNT(p.ticket_id) as attendance
+FROM `event` e, bookedat b, venue2 v, isfor i, purchased p
+WHERE e.host_id = $userID AND e.event_id = b.event_id
+    AND b.venue_id = v.venue_id AND e.event_id = i.event_id AND i.ticket_id = p.ticket_id
+GROUP BY e.name
+ORDER BY Attendance DESC
 
 
-SELECT ru.user_id
-FROM regularuser3 RU
-WHERE NOT EXISTS    (SELECT e.event_id
-                     FROM `event` E
-                     WHERE NOT EXISTS   (SELECT r.user_id
-                                         FROM purchased R, isfor I
-                                         WHERE e.event_id = i.event_id AND r.ticket_id = i.ticket_id AND r.user_id = ru.user_id));
+- Find all the people attending all events hosted by this host
+    - $userID is transferred from login page
+
+SELECT r3.name, r2.address, r1.email
+FROM regularuser3 r3, regularuser2 r2, regularuser1 r1
+WHERE r3.name = r2.name AND r2.name = r1.name 
+AND NOT EXISTS 
+    (SELECT e.event_id 
+    FROM `event` e 
+    WHERE e.host_id = $userID 
+    AND NOT EXISTS 
+        (SELECT p.user_id 
+            FROM purchased p, isfor i 
+            WHERE e.event_id = i.event_id AND p.ticket_id = i.ticket_id AND p.user_id = r3.user_id))
 
 
+- Add tickets for an event hosted by this host, from a ticket vendor and for a price
+    - $ticketID is generated
+    - $eventID is recieved from the event host has selected
+    - $vendorID is recieved from the vendor host has selected
 
-SELECT e.start_date, e.end_date
-FROM `event` e, regularuser3 u, reserves r
-WHERE u.user_id = r.user_id AND r.event_id = e.event_id
+INSERT INTO ticket(ticket_id, price) VALUES($ticketID, $price)
+INSERT INTO isfor(ticket_id, event_id) VALUES($ticketID, $eventID)
+INSERT INTO sells(vendor_id, ticket_id) VALUES($vendorID, $ticketID)
+
+
+- Update an event
+    - $name, $start_date, $end_date are user inputs
+    - $eventID corresponds to the event host has chosen to update
+
+UPDATE `event`
+SET name = '$name', start_date = '$startDate', end_date = '$endDate'
+WHERE event_id = $eventID
+
+
+- Find venues by capacity
+    - $atLeast is a user input
+
+- at least
+SELECT *
+FROM venue1 
+WHERE venue1.capacity >= '$atLeast'
+
+- minimum
+SELECT *
+FROM venue1 v1
+WHERE NOT EXISTS (SELECT *
+                    FROM venue1 v2
+                    WHERE v2.capacity < v1.capacity)
+
+- maximum
+SELECT *
+FROM venue1 v1
+WHERE NOT EXISTS (SELECT *
+                    FROM venue1 v2
+                    WHERE v2.capacity > v1.capacity)
+
+
+- Find people that attend an event hosted by this host
+    - $eventID corresponds to the event selected by the host
+
+SELECT DISTINCT r3.name, r2.address, r1.email
+FROM `event` e, regularuser3 r3, regularuser2 r2, regularuser1 r1, purchased p, isfor i, ticket t
+WHERE e.event_id = $eventID AND e.event_id = i.event_id AND t.ticket_id = i.ticket_id
+    AND i.ticket_id = p.ticket_id AND p.user_id = r3.user_id AND r3.name = r2.name
+    AND r3.name = r1.name
+
+- Find the performers who perform at a selected event hosted by this host
+    - $eventID corresponds to the event selected by the host
+
+SELECT p.name, p.contact
+FROM `event` e, performsat pat, performer p
+WHERE e.event_id = $eventID AND e.event_id = pat.event_id 
+    AND pat.performer_id = p.performer_id
+
+- Delete an event
+    - $eventID corresponds to the event selected by the host
+
+DELETE 
+FROM `event`
+WHERE event_id = $eventID

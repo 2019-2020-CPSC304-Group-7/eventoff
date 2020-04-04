@@ -26,8 +26,12 @@
                     $connection = openConnection();
                     if (isset($_POST["login"])) {
                         $userID = $_POST['userID'];
-                        $sqlForUser = "select name from regularuser3 where user_id = $userID";
-                        $sqlForHost = "select name from host2 where host_id = $userID";
+                        $sqlForUser = "SELECT name 
+                                        FROM regularuser3 
+                                        WHERE user_id = $userID";
+                        $sqlForHost = "SELECT name 
+                                        FROM host2 
+                                        WHERE host_id = $userID";
                         $result = $connection->query($sqlForUser);
 
                         if ($result->num_rows < 1) {
