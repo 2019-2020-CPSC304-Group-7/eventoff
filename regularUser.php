@@ -35,7 +35,30 @@
                             <input type="submit" name="schedule" class="btn btn-primary" value="Check Your Schedule">
                         </div>
                         <div class="col-md-3 mb-3">
-                            <input type="submit" name="events" class="btn btn-primary" value="Search All Events">
+                            <div class="input-group text-white bg-dark">
+                                <div class="input-group-prepend text-white bg-dark">
+                                    <span class="input-group-text text-white bg-dark"> Category </span>
+                                </div>
+                                <?php
+                                $query = "SELECT name 
+                                            FROM `eventcategory`";
+                                $result = $connection->query($query);
+                                ?>
+                                <select name="categories" class="form-control text-white bg-dark">
+                                <?php 
+                                    while ($row = $result->fetch_assoc()) {
+                                ?>
+                                <option value="<?php echo $row['name'];?>">
+                                    <?php echo $row['name'];?>
+                                </option>
+                                <?php
+                                    }
+                                ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <input type="submit" name="events" class="btn btn-primary" value="Search Events">
                         </div>
                     </div>
                 </form>
@@ -82,16 +105,20 @@
                 }
             ?>
 
-            <!-- PHP for SQL -->
+            <!-- PHP for All Events -->
             <?php
                 if (isset($_POST["events"])) {
-                    $getEvents = "SELECT e.name as n1, e.start_date, e.end_date, e.ranking as r1, h.name as n2, h.rating as r2, i.category
+                    $category = $_POST["categories"];
+                    $getEvents = "SELECT e.name as n1, e.start_date, e.end_date, e.ranking as r1, h.name as n2, h.rating as r2
                                     FROM `event` e, host2 h, iscategory i
-                                    WHERE e.host_id = h.host_id AND i.event_id = e.event_id
+                                    WHERE e.host_id = h.host_id AND i.event_id = e.event_id AND i.category = '$category'
                                     ORDER BY e.start_date ASC";
                     $eventsResult = $connection->query($getEvents);
                     if ($eventsResult->num_rows > 0) {
                         echo '<div class="card-body">
+                                <div class="alert alert-success" role="alert">
+                                    The following events are in the category <b>' .$category. '</b>
+                                </div>
                                 <table class="table  text-white bg-dark">
                                 <thead>
                                     <tr>
@@ -101,7 +128,6 @@
                                         <th scope="col">Event Rating</th>
                                         <th scope="col">Hosted By</th>
                                         <th scope="col">Host Rating</th>
-                                        <th scope="col">Category</th>
                                     <tr>
                                 </thead>
                                 <tbody>';
@@ -113,7 +139,6 @@
                                     <td>' .$rows["r1"]. '</td>
                                     <td>' .$rows["n2"]. '</td>
                                     <td>' .$rows["r2"]. '</td>
-                                    <td>' .$rows["category"]. '</td>
                                     </tr>';
                         }
                         echo '</tbody>
