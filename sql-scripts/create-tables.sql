@@ -66,7 +66,9 @@ CREATE TABLE `regularuser3` (
 
 CREATE TABLE `ticket` (
     ticket_id INT PRIMARY KEY,
-    price INT
+    event_id INT,
+    price INT,
+    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE `ticketvendor1` (
@@ -104,14 +106,6 @@ CREATE TABLE `iscategory` (
     category CHAR(80),
     PRIMARY KEY (event_id, category),
     FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE
-);
-
-CREATE TABLE `isfor` (
-    event_id INT,
-    ticket_id INT,
-    PRIMARY KEY (event_id, ticket_id),
-    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE,
-    FOREIGN KEY (ticket_id) REFERENCES `ticket` (ticket_id) ON DELETE CASCADE
 );
 
 CREATE TABLE `purchased` (
