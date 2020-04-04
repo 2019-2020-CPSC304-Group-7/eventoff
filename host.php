@@ -35,7 +35,7 @@
                             <input type="submit" name="events" class="btn btn-primary" value="See All Your Events">
                         </div>
                         <div class="col-md-3 mb-3">
-                            <input type="submit" name="allPeople" class="btn btn-primary" value="Get Everyone Attending Your Event">
+                            <input type="submit" name="allPeople" class="btn btn-primary" value="Find People Attending All Your Events">
                         </div>
                     </div>
                 </form>
@@ -528,7 +528,7 @@
                     </div>
                 </form>
             </div>
-            <!-- add php for sql -->
+            <!-- PHP for people attending the selected event -->
             <?php
                 if(isset($_POST["peopleAttending"])) {
                     $event = $_POST["eventList"];
@@ -546,6 +546,9 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
+                                <div class="alert alert-success" role="alert">
+                                    The following people will be attending <b>' .$event. '</b>
+                                </div>
                                 <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
@@ -613,7 +616,7 @@
                     </div>
                 </form>
             </div>
-            <!-- add php for sql -->
+            <!-- PHP for performers of a given event -->
             <?php
                 if(isset($_POST["performerContactInfo"])) {
                     $event = $_POST["eventList"];
@@ -630,6 +633,9 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
+                                <div class="alert alert-success" role="alert">
+                                    The following performers are performing at <b>' .$event. '</b>
+                                </div>
                                 <table class="table text-white bg-dark">
                                 <thead>
                                     <tr>
