@@ -539,7 +539,7 @@
                     $eventID = $id["event_id"];
                     $query = "SELECT DISTINCT r3.name, r2.address, r1.email
                                 FROM `event` e, regularuser3 r3, regularuser2 r2, regularuser1 r1, purchased p, ticket t
-                                WHERE e.event_id = $eventID AND e.event_id = t.event_id, AND t.ticket_id = p.ticket_id 
+                                WHERE e.event_id = $eventID AND e.event_id = t.event_id AND t.ticket_id = p.ticket_id 
                                 AND p.user_id = r3.user_id AND r3.name = r2.name
                                 AND r3.name = r1.name";
                     $result = $connection->query($query);
