@@ -44,7 +44,7 @@
             <?php 
                 if(isset($_POST["events"])) {
                     $query = "SELECT e.name as n1, e.start_date, e.end_date, e.ranking, v.name as n2, COUNT(p.ticket_id) as attendance
-                                FROM `event` e, bookedat b, venue2 v, isfor i, purchased p
+                                FROM `event` e, bookedat b, venue2 v, ticket i, purchased p
                                 WHERE e.host_id = $userID AND e.event_id = b.event_id
                                 AND b.venue_id = v.venue_id AND e.event_id = i.event_id AND i.ticket_id = p.ticket_id
                                 GROUP BY e.name
@@ -100,7 +100,7 @@
                                     WHERE e.host_id = $userID 
                                     AND NOT EXISTS 
                                         (SELECT p.user_id 
-                                            FROM purchased p, isfor i 
+                                            FROM purchased p, ticket i 
                                             WHERE e.event_id = i.event_id AND p.ticket_id = i.ticket_id AND p.user_id = r3.user_id))";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
@@ -222,11 +222,9 @@
                     $eventData = $eventResult->fetch_assoc();
                     $eventID = $eventData["event_id"];
                     $ticketID = randomTicketID($connection);
-                    $addToTickets = "INSERT INTO ticket(ticket_id, price) VALUES($ticketID, $price)";
-                    $addToIsFor = "INSERT INTO isfor(ticket_id, event_id) VALUES($ticketID, $eventID)";
+                    $addToTickets = "INSERT INTO ticket(ticket_id, price, event_id) VALUES($ticketID, $price, $eventID)";
                     $addToSells = "INSERT INTO sells(vendor_id, ticket_id) VALUES($vendorID, $ticketID)";
                     if ($connection->query($addToTickets) === FALSE ||
-                        $connection->query($addToIsFor) === FALSE ||
                         $connection->query($addToSells) === FALSE) {
                             echo '<div class="card-body">
                                     <div class="alert alert-warning" role="alert">
@@ -540,9 +538,9 @@
                     $id = $result->fetch_assoc();
                     $eventID = $id["event_id"];
                     $query = "SELECT DISTINCT r3.name, r2.address, r1.email
-                                FROM `event` e, regularuser3 r3, regularuser2 r2, regularuser1 r1, purchased p, isfor i, ticket t
-                                WHERE e.event_id = $eventID AND e.event_id = i.event_id AND t.ticket_id = i.ticket_id
-                                AND i.ticket_id = p.ticket_id AND p.user_id = r3.user_id AND r3.name = r2.name
+                                FROM `event` e, regularuser3 r3, regularuser2 r2, regularuser1 r1, purchased p, ticket t
+                                WHERE e.event_id = $eventID AND e.event_id = t.event_id, AND t.ticket_id = p.ticket_id 
+                                AND p.user_id = r3.user_id AND r3.name = r2.name
                                 AND r3.name = r1.name";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {

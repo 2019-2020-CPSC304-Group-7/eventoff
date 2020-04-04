@@ -68,7 +68,7 @@
             <?php
                 if(isset($_POST["schedule"])) {
                     $query = "SELECT DISTINCT e.name, e.start_date, e.end_date
-                                FROM purchased p, isfor i, `event` e
+                                FROM purchased p, ticket i, `event` e
                                 WHERE p.user_id = $userID AND p.ticket_id = i.ticket_id
                                 AND i.event_id = e.event_id
                                 ORDER BY e.start_date";
@@ -192,10 +192,10 @@
                     $min = $_POST["minimum"];
                     $max = $_POST["maximum"];
                     $query = "SELECT t.ticket_id as id, t.price as pr, e.name as nm1, v.name as nm2
-                                FROM ticket t, isfor i, `event` e, ticketvendor2 v, sells s
+                                FROM ticket t, `event` e, ticketvendor2 v, sells s
                                 WHERE t.price >= $min AND t.price <= $max
-                                AND t.ticket_id = i.ticket_id AND i.event_id = e.event_id
-                                AND s.ticket_id = t.ticket_id AND s.vendor_id = v.vendor_id
+                                AND t.event_id = e.event_id AND s.ticket_id = t.ticket_id 
+                                AND s.vendor_id = v.vendor_id
                                 AND t.ticket_id NOT IN (SELECT p.ticket_id
                                                         FROM purchased p)
                                 ORDER BY t.price ASC";
@@ -387,9 +387,9 @@
                     $eventID = $id["event_id"];
                     $_SESSION["eventID"] = $eventID;
                     $query = "SELECT t.ticket_id, v.name as n1, e.name as n2, MIN(t.price) as price
-                                FROM sells s, ticket t, isfor i, ticketvendor2 v, event e
-                                WHERE s.ticket_id = t.ticket_id AND s.ticket_id = i.ticket_id 
-                                AND e.event_id = $eventID AND i.event_id = e.event_id AND s.vendor_id = v.vendor_id
+                                FROM sells s, ticket t, ticketvendor2 v, event e
+                                WHERE s.ticket_id = t.ticket_id AND e.event_id = $eventID 
+                                AND t.event_id = e.event_id AND s.vendor_id = v.vendor_id
                                 AND t.ticket_id NOT IN (SELECT p.ticket_id FROM purchased p)
                                 GROUP BY s.vendor_id";
                     $_SESSION["cheapestTicketDataQuery"] = $query;
