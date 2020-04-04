@@ -237,7 +237,8 @@
                     else {
                         echo '<div class="card-body">
                                 <div class="alert alert-success" role="alert">
-                                    Ticket was added successfully.
+                                    Ticket was added successfully for <b>' .$event. '  
+                                    </b> with <b>' .$vendor. '</b>
                                 </div>
                                 </div>';
                     }
@@ -327,15 +328,15 @@
                                     WHERE event_id = $eventID";
                     if ($connection->query($updateQuery) === TRUE) {
                         echo '<div class="card-body">
-                            <div class="alert alert-success" role="alert">'
-                                .$event. ' was successfully updated.
+                            <div class="alert alert-success" role="alert">
+                                <b>' .$event. '</b> was successfully updated.
                             </div>
                             </div>';
                     } 
                     else {
                         echo '<div class="card-body">
                             <div class="alert alert-warning" role="alert">
-                                Error updating ' .$event. '. Error: ' .$connection->error. '
+                                Error updating <b>' .$event. '</b>.
                             </div>
                             </div>';
                     }
@@ -701,7 +702,7 @@
                     </div>
                 </form>
             </div>
-            <!-- add php -->
+            <!-- PHP for delete event -->
             <?php
                 if(isset($_POST["deleteEvent"])) {
                     $event = $_POST["eventList"];
@@ -716,15 +717,15 @@
                                     WHERE event_id = $eventID";
                     if ($connection->query($deleteQuery) === TRUE) {
                         echo '<div class="card-body">
-                            <div class="alert alert-success" role="alert">'
-                                .$event. ' was successfully deleted.
+                            <div class="alert alert-success" role="alert">
+                                <b> '.$event. '</b> was successfully deleted.
                             </div>
                             </div>';
                     }
                     else {
                         echo '<div class="card-body">
                             <div class="alert alert-warning" role="alert">
-                                Error deleting ' .$event. '
+                                Error deleting <b>' .$event. '</b>
                             </div>
                             </div>';
                     }

@@ -304,16 +304,19 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                    <table class="table  text-white bg-dark">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Host</th>
-                                            <th scope="col">Email Address</th>
-                                            <th scope="col">Rating</th>
-                                            <th scope="col">Event</th>
-                                        <tr>
-                                    </thead>
-                                    <tbody>';
+                                <div class="alert alert-success" role="alert">
+                                    The following hosts are hosting <b>' .$event. '</b>
+                                </div>
+                                <table class="table  text-white bg-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Host</th>
+                                        <th scope="col">Email Address</th>
+                                        <th scope="col">Rating</th>
+                                        <th scope="col">Event</th>
+                                    <tr>
+                                </thead>
+                                <tbody>';
                         while ($rows = $result->fetch_assoc()) {
                             echo '<tr>
                                     <td>' .$rows["n1"]. '</td>
@@ -393,16 +396,19 @@
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
-                                    <table class="table  text-white bg-dark">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Vendor</th>
-                                            <th scope="col">Event</th>
-                                            <th scope="col">Price</th>
-                                            <th scope="col">Book Ticket</th>
-                                        <tr>
-                                    </thead>
-                                    <tbody>';
+                                <div class="alert alert-success" role="alert">
+                                    Following are the cheapest tickets for <b>' .$event. '</b>
+                                </div>
+                                <table class="table  text-white bg-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Vendor</th>
+                                        <th scope="col">Event</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Book Ticket</th>
+                                    <tr>
+                                </thead>
+                                <tbody>';
                         while ($rows = $result->fetch_assoc()) {
                             $ticketID = $rows["ticket_id"];
                             echo '<tr>
