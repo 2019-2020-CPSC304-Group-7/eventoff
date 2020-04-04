@@ -197,7 +197,8 @@
                                 AND t.ticket_id = i.ticket_id AND i.event_id = e.event_id
                                 AND s.ticket_id = t.ticket_id AND s.vendor_id = v.vendor_id
                                 AND t.ticket_id NOT IN (SELECT p.ticket_id
-                                                        FROM purchased p)";
+                                                        FROM purchased p)
+                                ORDER BY t.price ASC";
                     $result = $connection->query($query);
                     if ($result->num_rows > 0) {
                         echo '<div class="card-body">
