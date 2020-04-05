@@ -3,7 +3,7 @@
 - For a regular user
     - $userID is a user input
 
-1:
+1 (Projection):
 
 SELECT name 
 FROM regularuser3 
@@ -23,7 +23,7 @@ WHERE host_id = $userID
 
 - Queries for a regular user:
 
-3:
+3 (Selection):
 
 - Select all the unsold tickets, corresponding events and ticket vendors 
 costing between a range (input by user), ordered by price
@@ -50,7 +50,7 @@ WHERE p.user_id = $userID AND p.ticket_id = t.ticket_id
 ORDER BY e.start_date
 
 
-5:
+5 (Join):
 
 - Get all events and their hosts in a particular event category, 
 ordered by start date
@@ -72,7 +72,7 @@ FROM host2 h, event e
 WHERE h.host_id = e.host_id AND e.name = '$event'
 
 
-7:
+7 (Nested aggregation with group-by):
 
 - Find the minimum ticket price, corresponding ticket vendor and event
 for unsold tickets for an event by each ticket vendor
@@ -87,7 +87,7 @@ GROUP BY s.vendor_id
 
 =========================================================================================================
 
-8:
+8 (Aggregation):
 
 Queries for a host:
 
@@ -104,7 +104,7 @@ GROUP BY e.name
 ORDER BY Attendance DESC
 
 
-9:
+9 (Division):
 
 - Find all the people attending all events hosted by this host
     - $userID is transferred from login page
@@ -122,7 +122,7 @@ AND NOT EXISTS
             WHERE e.event_id = t.event_id AND p.ticket_id = t.ticket_id AND p.user_id = r3.user_id))
 
 
-10:
+10 (Insert):
 
 - Add tickets for an event hosted by this host, from a ticket vendor and for a price
     - $ticketID is generated
@@ -133,7 +133,7 @@ INSERT INTO ticket(ticket_id, price, event_id) VALUES($ticketID, $price, $eventI
 INSERT INTO sells(vendor_id, ticket_id) VALUES($vendorID, $ticketID)
 
 
-11:
+11 (Update):
 
 - Update an event
     - $name, $start_date, $end_date are user inputs
@@ -198,7 +198,7 @@ WHERE e.event_id = $eventID AND e.event_id = pat.event_id
     AND pat.performer_id = p.performer_id
 
 
-17:
+17 (Delete):
 
 - Delete an event
     - $eventID corresponds to the event selected by the host
