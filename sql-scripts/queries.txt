@@ -3,12 +3,17 @@
 - For a regular user
     - $userID is a user input
 
+1:
+
 SELECT name 
 FROM regularuser3 
 WHERE user_id = $userID
 
 - For a host
     - $userID is a user input
+
+
+2:
 
 SELECT name 
 FROM host2 
@@ -17,6 +22,8 @@ WHERE host_id = $userID
 =========================================================================================================
 
 - Queries for a regular user:
+
+3:
 
 - Select all the unsold tickets, corresponding events and ticket vendors 
 costing between a range (input by user), ordered by price
@@ -31,6 +38,8 @@ WHERE t.price >= $min AND t.price <= $max
 ORDER BY t.price ASC
 
 
+4:
+
 - Get all the time blocks for a user based on the events the user 
 has bought a ticket for, ordered by start time
     - $userID is transferred from the login page
@@ -42,6 +51,8 @@ WHERE p.user_id = $userID AND p.ticket_id = i.ticket_id
 ORDER BY e.start_date
 
 
+5:
+
 - Get all events and their hosts in a particular event category, 
 ordered by start date
     - $category is a user input
@@ -52,6 +63,8 @@ WHERE e.host_id = h.host_id AND i.event_id = e.event_id AND i.category = '$categ
 ORDER BY e.start_date ASC
 
 
+6:
+
 - Find the host's details for a given event
     - $event is a user input
 
@@ -59,6 +72,8 @@ SELECT h.name as n1, h.email, h.rating, e.name as n2
 FROM host2 h, event e
 WHERE h.host_id = e.host_id AND e.name = '$event'
 
+
+7:
 
 - Find the minimum ticket price, corresponding ticket vendor and event
 for unsold tickets for an event by each ticket vendor
@@ -73,6 +88,8 @@ GROUP BY s.vendor_id
 
 =========================================================================================================
 
+8:
+
 Queries for a host:
 
 - Find all the events hosted by a host, their venues and tickets sold,
@@ -86,6 +103,8 @@ WHERE e.host_id = $userID AND e.event_id = b.event_id
 GROUP BY e.name
 ORDER BY Attendance DESC
 
+
+9:
 
 - Find all the people attending all events hosted by this host
     - $userID is transferred from login page
@@ -103,6 +122,8 @@ AND NOT EXISTS
             WHERE e.event_id = i.event_id AND p.ticket_id = i.ticket_id AND p.user_id = r3.user_id))
 
 
+10:
+
 - Add tickets for an event hosted by this host, from a ticket vendor and for a price
     - $ticketID is generated
     - $eventID is recieved from the event host has selected
@@ -113,6 +134,8 @@ INSERT INTO isfor(ticket_id, event_id) VALUES($ticketID, $eventID)
 INSERT INTO sells(vendor_id, ticket_id) VALUES($vendorID, $ticketID)
 
 
+11:
+
 - Update an event
     - $name, $start_date, $end_date are user inputs
     - $eventID corresponds to the event host has chosen to update
@@ -122,6 +145,8 @@ SET name = '$name', start_date = '$startDate', end_date = '$endDate'
 WHERE event_id = $eventID
 
 
+12:
+
 - Find venues by capacity
     - $atLeast is a user input
 
@@ -130,12 +155,18 @@ SELECT *
 FROM venue1 
 WHERE venue1.capacity >= '$atLeast'
 
+
+13:
+
 - minimum
 SELECT *
 FROM venue1 v1
 WHERE NOT EXISTS (SELECT *
                     FROM venue1 v2
                     WHERE v2.capacity < v1.capacity)
+
+
+14:
 
 - maximum
 SELECT *
@@ -144,6 +175,8 @@ WHERE NOT EXISTS (SELECT *
                     FROM venue1 v2
                     WHERE v2.capacity > v1.capacity)
 
+
+15:
 
 - Find people that attend an event hosted by this host
     - $eventID corresponds to the event selected by the host
@@ -154,6 +187,9 @@ WHERE e.event_id = $eventID AND e.event_id = i.event_id AND t.ticket_id = i.tick
     AND i.ticket_id = p.ticket_id AND p.user_id = r3.user_id AND r3.name = r2.name
     AND r3.name = r1.name
 
+
+16:
+
 - Find the performers who perform at a selected event hosted by this host
     - $eventID corresponds to the event selected by the host
 
@@ -161,6 +197,9 @@ SELECT p.name, p.contact
 FROM `event` e, performsat pat, performer p
 WHERE e.event_id = $eventID AND e.event_id = pat.event_id 
     AND pat.performer_id = p.performer_id
+
+
+17:
 
 - Delete an event
     - $eventID corresponds to the event selected by the host
