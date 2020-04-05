@@ -105,7 +105,8 @@ CREATE TABLE `iscategory` (
     event_id INT,
     category CHAR(80),
     PRIMARY KEY (event_id, category),
-    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE
+    FOREIGN KEY (event_id) REFERENCES `event` (event_id) ON DELETE CASCADE,
+    FOREIGN KEY (category) REFERENCES `eventcategory` (name) ON DELETE SET NULL
 );
 
 CREATE TABLE `purchased` (
