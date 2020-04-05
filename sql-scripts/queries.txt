@@ -30,11 +30,10 @@ costing between a range (input by user), ordered by price
     - $min, $max are user inputs
 
 SELECT t.ticket_id as id, t.price as pr, e.name as nm1, v.name as nm2
-FROM ticket t, isfor i, `event` e, ticketvendor2 v, sells s
+FROM ticket t, `event` e, ticketvendor2 v, sells s
 WHERE t.price >= $min AND t.price <= $max
-    AND t.ticket_id = i.ticket_id AND i.event_id = e.event_id
-    AND s.ticket_id = t.ticket_id AND s.vendor_id = v.vendor_id
-    AND t.ticket_id NOT IN (SELECT p.ticket_id FROM purchased p)
+    t.event_id = e.event_id AND s.ticket_id = t.ticket_id
+    AND s.vendor_id = v.vendor_id AND t.ticket_id NOT IN (SELECT p.ticket_id FROM purchased p)
 ORDER BY t.price ASC
 
 
@@ -45,9 +44,9 @@ has bought a ticket for, ordered by start time
     - $userID is transferred from the login page
 
 SELECT DISTINCT e.name, e.start_date, e.end_date
-FROM purchased p, isfor i, `event` e
-WHERE p.user_id = $userID AND p.ticket_id = i.ticket_id
-    AND i.event_id = e.event_id
+FROM purchased p, ticket t, `event` e
+WHERE p.user_id = $userID AND p.ticket_id = t.ticket_id
+    AND t.event_id = e.event_id
 ORDER BY e.start_date
 
 
@@ -80,9 +79,9 @@ for unsold tickets for an event by each ticket vendor
     - $eventID is a user input
 
 SELECT t.ticket_id, v.name as n1, e.name as n2, MIN(t.price) as price
-FROM sells s, ticket t, isfor i, ticketvendor2 v, event e
-WHERE s.ticket_id = t.ticket_id AND s.ticket_id = i.ticket_id 
-        AND e.event_id = $eventID AND i.event_id = e.event_id AND s.vendor_id = v.vendor_id
+FROM sells s, ticket t, ticketvendor2 v, event e
+WHERE s.ticket_id = t.ticket_id AND e.event_id = $eventID
+        AND t.event_id = e.event_id AND s.vendor_id = v.vendor_id
         AND t.ticket_id NOT IN (SELECT p.ticket_id FROM purchased p)
 GROUP BY s.vendor_id
 
@@ -97,9 +96,10 @@ ordered by number of tickets sold
     - $userID is transferred from the login page
 
 SELECT e.name as n1, e.start_date, e.end_date, e.ranking, v.name as n2, COUNT(p.ticket_id) as attendance
-FROM `event` e, bookedat b, venue2 v, isfor i, purchased p
+FROM `event` e, bookedat b, venue2 v, ticket t, purchased p
 WHERE e.host_id = $userID AND e.event_id = b.event_id
-    AND b.venue_id = v.venue_id AND e.event_id = i.event_id AND i.ticket_id = p.ticket_id
+    AND b.venue_id = v.venue_id AND e.event_id = t.event_id
+    AND t.ticket_id = p.ticket_id
 GROUP BY e.name
 ORDER BY Attendance DESC
 
@@ -118,19 +118,18 @@ AND NOT EXISTS
     WHERE e.host_id = $userID 
     AND NOT EXISTS 
         (SELECT p.user_id 
-            FROM purchased p, isfor i 
-            WHERE e.event_id = i.event_id AND p.ticket_id = i.ticket_id AND p.user_id = r3.user_id))
+            FROM purchased p, ticket t
+            WHERE e.event_id = t.event_id AND p.ticket_id = t.ticket_id AND p.user_id = r3.user_id))
 
 
 10:
 
 - Add tickets for an event hosted by this host, from a ticket vendor and for a price
     - $ticketID is generated
-    - $eventID is recieved from the event host has selected
-    - $vendorID is recieved from the vendor host has selected
+    - $eventID is received from the event host has selected
+    - $vendorID is received from the vendor host has selected
 
-INSERT INTO ticket(ticket_id, price) VALUES($ticketID, $price)
-INSERT INTO isfor(ticket_id, event_id) VALUES($ticketID, $eventID)
+INSERT INTO ticket(ticket_id, price, event_id) VALUES($ticketID, $price, $eventID)
 INSERT INTO sells(vendor_id, ticket_id) VALUES($vendorID, $ticketID)
 
 
@@ -182,9 +181,9 @@ WHERE NOT EXISTS (SELECT *
     - $eventID corresponds to the event selected by the host
 
 SELECT DISTINCT r3.name, r2.address, r1.email
-FROM `event` e, regularuser3 r3, regularuser2 r2, regularuser1 r1, purchased p, isfor i, ticket t
-WHERE e.event_id = $eventID AND e.event_id = i.event_id AND t.ticket_id = i.ticket_id
-    AND i.ticket_id = p.ticket_id AND p.user_id = r3.user_id AND r3.name = r2.name
+FROM `event` e, regularuser3 r3, regularuser2 r2, regularuser1 r1, purchased p, ticket t
+WHERE e.event_id = $eventID AND e.event_id = t.event_id
+    AND t.ticket_id = p.ticket_id AND p.user_id = r3.user_id AND r3.name = r2.name
     AND r3.name = r1.name
 
 
