@@ -3,7 +3,7 @@
 - For a regular user
     - $userID is a user input
 
-1 (Projection):
+1:
 
 SELECT name 
 FROM regularuser3 
@@ -62,12 +62,14 @@ WHERE e.host_id = h.host_id AND i.event_id = e.event_id AND i.category = '$categ
 ORDER BY e.start_date ASC
 
 
-6:
+6 (Projection):
 
 - Find the host's details for a given event
     - $event is a user input
+    - $projectionOption is a user input
+        - if user wants to see both host email and event name, the value is ", h.email, e.name as n2"
 
-SELECT h.name as n1, h.email, h.rating, e.name as n2
+SELECT h.name as n1, h.rating$projectionOption
 FROM host2 h, event e
 WHERE h.host_id = e.host_id AND e.name = '$event'
 

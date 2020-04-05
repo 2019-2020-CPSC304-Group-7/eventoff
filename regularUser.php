@@ -289,6 +289,18 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-check mb-2 mr-sm-2 text-white bg-dark">
+                        <input class="form-check-input text-white bg-dark" type="checkbox" id="inlineFormCheck" name="host-email">
+                        <label class="form-check-label text-white bg-dark" for="inlineFormCheck">
+                            Show Host Email
+                        </label>
+                    </div>
+                    <div class="form-check mb-2 mr-sm-2 text-white bg-dark">
+                        <input class="form-check-input text-white bg-dark" type="checkbox" id="inlineFormCheck" name="event-name">
+                        <label class="form-check-label text-white bg-dark" for="inlineFormCheck">
+                            Show Event Name
+                        </label>
+                    </div>
                     <div class="form-group">
                         <input type="submit" name="hostRating" class="btn btn-primary" value="Search">
                     </div>
@@ -298,12 +310,22 @@
             <?php 
                 if(isset($_POST["hostRating"])) {
                     $event = $_POST["eventList1"];
-                    $query = "SELECT h.name as n1, h.email, h.rating, e.name as n2
+
+                    $projectionOption = " ";
+                    if (isset($_POST["host-email"]))
+                        $projectionOption .= ", h.email";
+                    if (isset($_POST["event-name"]))
+                        $projectionOption .= ", e.name as n2";
+                    else
+                        $projectionOption .= " ";
+
+                    $query = "SELECT h.name as n1, h.rating$projectionOption
                                 FROM host2 h, event e
                                 WHERE h.host_id = e.host_id AND e.name = '$event'";
                     $result = $connection->query($query);
-                    if ($result->num_rows > 0) {
-                        echo '<div class="card-body">
+                    $columnTitles = '';
+                    if (isset($_POST["host-email"]) && isset($_POST["event-name"]))
+                        $columnTitles = '<div class="card-body">
                                 <div class="alert alert-success" role="alert">
                                     The following hosts are hosting <b>' .$event. '</b>
                                 </div>
@@ -311,19 +333,80 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">Host</th>
+                                        <th scope="col">Rating</th>
                                         <th scope="col">Email Address</th>
+                                        <th scope="col">Event</th>
+                                    <tr>
+                                </thead>
+                                <tbody>';
+                    else if (isset($_POST["host-email"]))
+                        $columnTitles = '<div class="card-body">
+                                <div class="alert alert-success" role="alert">
+                                    The following hosts are hosting <b>' .$event. '</b>
+                                </div>
+                                <table class="table  text-white bg-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Host</th>
+                                        <th scope="col">Rating</th>
+                                        <th scope="col">Email Address</th>
+                                    <tr>
+                                </thead>
+                                <tbody>';
+                    else if (isset($_POST["event-name"]))
+                        $columnTitles = '<div class="card-body">
+                                <div class="alert alert-success" role="alert">
+                                    The following hosts are hosting <b>' .$event. '</b>
+                                </div>
+                                <table class="table  text-white bg-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Host</th>
                                         <th scope="col">Rating</th>
                                         <th scope="col">Event</th>
                                     <tr>
                                 </thead>
                                 <tbody>';
+                    else
+                        $columnTitles = '<div class="card-body">
+                                <div class="alert alert-success" role="alert">
+                                    The following hosts are hosting <b>' .$event. '</b>
+                                </div>
+                                <table class="table  text-white bg-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Host</th>
+                                        <th scope="col">Rating</th>
+                                    <tr>
+                                </thead>
+                                <tbody>';
+                    if ($result->num_rows > 0) {
+                        echo $columnTitles;
                         while ($rows = $result->fetch_assoc()) {
-                            echo '<tr>
-                                    <td>' .$rows["n1"]. '</td>
-                                    <td>' .$rows["email"]. '</td>
-                                    <td>' .$rows["rating"]. '</td>
-                                    <td>' .$rows["n2"]. '</td>
-                                    </tr>';
+                            if (isset($_POST["host-email"]) && isset($_POST["event-name"]))
+                                echo '<tr>
+                                        <td>' .$rows["n1"]. '</td>
+                                        <td>' .$rows["rating"]. '</td>
+                                        <td>' .$rows["email"]. '</td>
+                                        <td>' .$rows["n2"]. '</td>
+                                        </tr>';
+                            else if (isset($_POST["host-email"]))
+                                echo '<tr>
+                                        <td>' .$rows["n1"]. '</td>
+                                        <td>' .$rows["rating"]. '</td>
+                                        <td>' .$rows["email"]. '</td>
+                                        </tr>';
+                            else if (isset($_POST["event-name"]))
+                                echo '<tr>
+                                        <td>' .$rows["n1"]. '</td>
+                                        <td>' .$rows["rating"]. '</td>
+                                        <td>' .$rows["n2"]. '</td>
+                                        </tr>';
+                            else
+                                echo '<tr>
+                                        <td>' .$rows["n1"]. '</td>
+                                        <td>' .$rows["rating"]. '</td>
+                                        </tr>';
                         }
                         echo '</tbody>
                             </table>
