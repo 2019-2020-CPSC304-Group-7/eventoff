@@ -1,3 +1,25 @@
+Specific queries chosen for each rubric category requirement:
+Selection:          Query #3
+
+Join Query:         Query #5
+
+Projection:         Query #6
+
+Nested Aggregation Query
+with Group-by:      Query #7
+
+Aggregation Query:  Query #8
+
+Division Query:     Query #9
+
+Insert Operation:   Query #10
+
+Update Operation:   Query #11
+
+Delete Operation:   Query #17
+
+=======================================================================================================
+
 - Queries for login:
 
 - For a regular user

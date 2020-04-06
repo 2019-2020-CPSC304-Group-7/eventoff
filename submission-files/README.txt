@@ -1,3 +1,7 @@
+Our queries that we chose to be marked for each rubric category is indicated at the
+beginning of the file queries.txt. Their corresponding screenshots can be find in the
+directory screenshots/queries-chosen-for-rubric.
+
 Shortcomings of the front-end:
 There are some minor things that the front-end falls short on accomplishing. 
 Following is a list of those shortcomings to help you interact with the application:
